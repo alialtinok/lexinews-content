@@ -1,0 +1,9 @@
+# Gemini (varsayılan, ücretsiz)
+google-genai>=0.3.0
+
+# Claude (opsiyonel, ileride premium'a geçersen)
+anthropic>=0.40.0
+
+# RSS ve yardımcılar
+feedparser>=6.0.11
+python-dotenv>=1.0.0
