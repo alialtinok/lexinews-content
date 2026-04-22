@@ -25,29 +25,29 @@ CEFR_LEVELS = [
     CEFRLevel(
         code="A2",
         name="Elementary",
-        min_words=200,
-        target_words=280,
-        description="simple English, common 1000 words, short sentences (8-12 words), basic past and future tenses only. Cover the full story with enough detail — write 5-6 paragraphs minimum so the reader understands what happened, who was involved, and why it matters",
+        min_words=60,
+        target_words=90,
+        description="simple English, common 1000 words, short sentences (8-12 words), basic tenses only. Cover what happened, who, and why — aim for 5-7 sentences",
     ),
     CEFRLevel(
         code="B1",
         name="Intermediate",
-        min_words=150,
-        target_words=220,
+        min_words=90,
+        target_words=130,
         description="clear English, 2000 most common words, moderate sentence length (10-15 words), all basic tenses",
     ),
     CEFRLevel(
         code="B2",
         name="Upper-Intermediate",
-        min_words=180,
-        target_words=260,
+        min_words=120,
+        target_words=170,
         description="natural English, 3500 common words, varied sentence structure, some idiomatic expressions allowed",
     ),
     CEFRLevel(
         code="C1",
         name="Advanced",
-        min_words=220,
-        target_words=320,
+        min_words=150,
+        target_words=200,
         description="advanced English, 5000+ words, complex sentences, nuanced vocabulary, figurative language, formal register",
     ),
 ]
@@ -96,7 +96,7 @@ GEMINI_MAX_TOKENS = 1024
 
 # Groq - ücretsiz, bölge kısıtlaması yok, çok hızlı
 GROQ_MODEL = "llama-3.3-70b-versatile"
-GROQ_MAX_TOKENS = 1024
+GROQ_MAX_TOKENS = 2048
 
 
 # ─────────────────────────────────────────────────────────────
