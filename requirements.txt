@@ -1,7 +1,10 @@
-# Gemini (varsayılan, ücretsiz)
+# Groq (varsayılan, ücretsiz)
+groq>=0.11.0
+
+# Gemini (opsiyonel)
 google-genai>=0.3.0
 
-# Claude (opsiyonel, ileride premium'a geçersen)
+# Claude (opsiyonel)
 anthropic>=0.40.0
 
 # RSS ve yardımcılar
