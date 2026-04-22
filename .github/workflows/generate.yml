@@ -34,8 +34,7 @@ jobs:
           # Claude: AI_PROVIDER: claude + ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           # Gemini: AI_PROVIDER: gemini + GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          cd scripts
-          python generate_articles.py
+          PYTHONPATH=scripts python scripts/generate_articles.py
 
       - name: Commit and push updated articles
         run: |
