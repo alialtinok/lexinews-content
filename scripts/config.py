@@ -110,7 +110,8 @@ Rewrite the following news article for a CEFR {level_code} ({level_name}) Englis
 
 CRITICAL REQUIREMENTS:
 - Use {level_description}
-- Your text MUST be between {min_words} and {target_words} words. This is mandatory. Count your words.
+- WORD COUNT: Your body text MUST contain AT LEAST {min_words} words. This is non-negotiable. A response with fewer than {min_words} words is WRONG and will be rejected. Count carefully before responding.
+- Cover the full story: explain what happened, who was involved, where, when, and why it matters. Do NOT summarise in 2-3 sentences. Write a complete, detailed article.
 - Keep all facts accurate - do not invent or hallucinate information
 - Write a clear, engaging title (max 10 words)
 - Identify 5 key vocabulary words from your rewritten text that a {level_code} learner should study
