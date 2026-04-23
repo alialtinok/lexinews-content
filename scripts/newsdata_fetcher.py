@@ -69,11 +69,17 @@ def fetch_newsdata(category: str, api_key: str, limit: int = 3) -> list[RawArtic
 
     articles = []
     for item in results:
-        # Full content varsa kullan, yoksa description, yoksa title+description birleştir
-        content = item.get("content") or item.get("description") or ""
-        if not content:
-            content = item.get("title", "")
-        if len(content) < 30:
+        # content free tier'da kısıtlı (28 char placeholder) — description + ai_summary kullan
+        description = item.get("description") or ""
+        ai_summary  = item.get("ai_summary") or ""
+        title       = item.get("title") or ""
+
+        if len(description) > 50:
+            content = description
+        elif len(ai_summary) > 50:
+            content = ai_summary
+        else:
+            # Sadece başlık varsa atla
             continue
 
         # Tarih parse
