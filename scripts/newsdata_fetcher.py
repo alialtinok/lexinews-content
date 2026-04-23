@@ -61,11 +61,19 @@ def fetch_newsdata(category: str, api_key: str, limit: int = 3) -> list[RawArtic
         print(f"  ⚠️  NewsData API error: {data.get('results', data)}")
         return []
 
+    results = data.get("results", [])
+    if results:
+        sample = results[0]
+        print(f"    Sample fields: {list(sample.keys())}")
+        print(f"    content len: {len(sample.get('content') or '')}, desc len: {len(sample.get('description') or '')}")
+
     articles = []
-    for item in data.get("results", []):
-        # Full content varsa kullan, yoksa description
+    for item in results:
+        # Full content varsa kullan, yoksa description, yoksa title+description birleştir
         content = item.get("content") or item.get("description") or ""
-        if not content or len(content) < 100:
+        if not content:
+            content = item.get("title", "")
+        if len(content) < 30:
             continue
 
         # Tarih parse
