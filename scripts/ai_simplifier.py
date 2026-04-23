@@ -31,7 +31,7 @@ from config import (
     GROQ_MAX_TOKENS,
     SIMPLIFICATION_PROMPT,
 )
-from rss_fetcher import RawArticle
+from newsdata_fetcher import RawArticle
 
 
 # ─────────────────────────────────────────────────────────────
