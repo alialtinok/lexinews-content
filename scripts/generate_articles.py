@@ -27,8 +27,8 @@ try:
 except ImportError:
     pass
 
-from config import RSS_FEEDS, ARTICLES_PER_CATEGORY, OUTPUT_PATH
-from rss_fetcher import fetch_all
+from config import ARTICLES_PER_CATEGORY, OUTPUT_PATH, NEWSDATA_CATEGORIES
+from newsdata_fetcher import fetch_all
 from ai_simplifier import create_simplifier
 
 
@@ -55,9 +55,14 @@ def main() -> int:
         print(f"   Local: add {required_key}=... to .env file")
         return 1
 
-    # ─── 2. RSS'den haberleri çek ─────────────────────────
-    print("\n🌐 Step 1: Fetching RSS feeds")
-    raw_articles = fetch_all(RSS_FEEDS, ARTICLES_PER_CATEGORY)
+    # ─── 2. NewsData.io'dan haberleri çek ────────────────
+    newsdata_key = os.environ.get("NEWSDATA_API_KEY")
+    if not newsdata_key:
+        print("❌ NEWSDATA_API_KEY not set!")
+        return 1
+
+    print("\n🌐 Step 1: Fetching from NewsData.io")
+    raw_articles = fetch_all(list(NEWSDATA_CATEGORIES.keys()), ARTICLES_PER_CATEGORY, newsdata_key)
 
     if not raw_articles:
         print("❌ No articles fetched. Exiting.")

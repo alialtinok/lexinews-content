@@ -54,29 +54,15 @@ CEFR_LEVELS = [
 
 
 # ─────────────────────────────────────────────────────────────
-# RSS Feed'leri - Kategorilere göre
+# NewsData.io Kategorileri
 # ─────────────────────────────────────────────────────────────
-# Sadece güvenilir, halka açık RSS feed'leri kullanıyoruz.
-# Her gün her kategoriden 2 haber alacağız = günde 10 haber toplam.
-# Her haber 6 CEFR seviyesinde üretilecek = 60 makale/gün.
-RSS_FEEDS = {
-    "world": [
-        "https://feeds.bbci.co.uk/news/world/rss.xml",
-        "https://www.aljazeera.com/xml/rss/all.xml",
-    ],
-    "technology": [
-        "https://feeds.bbci.co.uk/news/technology/rss.xml",
-        "https://www.theverge.com/rss/index.xml",
-    ],
-    "science": [
-        "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml",
-    ],
-    "sports": [
-        "https://feeds.bbci.co.uk/sport/rss.xml",
-    ],
-    "culture": [
-        "https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml",
-    ],
+# Uygulama kategorisi → NewsData.io kategori adı
+NEWSDATA_CATEGORIES = {
+    "world":      "top",
+    "technology": "technology",
+    "science":    "science",
+    "sports":     "sports",
+    "culture":    "entertainment",
 }
 
 # Her kategoriden kaç haber alınacak
