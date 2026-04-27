@@ -1,9 +1,9 @@
 name: Generate Articles
 
 on:
-  # Her gün UTC 06:00'da otomatik çalış (Türkiye saati 09:00)
+  # Her gün UTC 13:00'da otomatik çalış (Kanada Eastern saati 09:00)
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '0 13 * * *'
 
   # Manuel olarak da tetiklenebilsin (test için)
   workflow_dispatch:
