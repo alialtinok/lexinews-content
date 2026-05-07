@@ -1,5 +1,5 @@
 """
-LexiNews Content Generator - Main Script
+WislyNews Content Generator - Main Script
 
 Tüm pipeline'ı çalıştırır:
 1. RSS feed'lerinden haberleri çek
@@ -35,7 +35,7 @@ from ai_simplifier import create_simplifier
 def main() -> int:
     """Ana pipeline. Başarıda 0, hatada 1 döner (exit code)."""
     print("=" * 60)
-    print("LexiNews Content Generator")
+    print("WislyNews Content Generator")
     print(f"Started at: {datetime.now(timezone.utc).isoformat()}")
     print("=" * 60)
 

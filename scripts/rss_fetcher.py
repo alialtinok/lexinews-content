@@ -1,5 +1,5 @@
 """
-LexiNews Content Generator - RSS Fetcher
+WislyNews Content Generator - RSS Fetcher
 
 RSS feed'lerinden haberleri çeker ve yapılandırılmış bir format döndürür.
 feedparser kütüphanesi hem RSS hem Atom formatlarını otomatik handle eder.

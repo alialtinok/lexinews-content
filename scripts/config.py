@@ -1,5 +1,5 @@
 """
-LexiNews Content Generator - Configuration
+WislyNews Content Generator - Configuration
 
 Tüm sabitler, feed listeleri, CEFR seviye tanımları ve prompt şablonları
 burada tutulur. Kod mantığından ayrıdır, böylece ayarları değiştirmek için

@@ -1,6 +1,6 @@
-# LexiNews Content Generator
+# WislyNews Content Generator
 
-LexiNews iOS app'inin içerik üretim pipeline'ı. RSS feed'lerinden haberleri çeker,
+WislyNews iOS app'inin içerik üretim pipeline'ı. RSS feed'lerinden haberleri çeker,
 AI ile 6 farklı CEFR seviyesine (A1-C2) basitleştirir ve JSON olarak yayınlar.
 
 ## AI Provider Desteği
@@ -23,7 +23,7 @@ Biz **~60 istek/gün** kullanıyoruz, Gemini ücretsiz tier rahat rahat yetiyor.
 5. Workflow dosyayı repo'ya commit'ler
 6. iOS app şu URL'den çeker:
    ```
-   https://raw.githubusercontent.com/alialtinok/lexinews-content/main/output/articles.json
+   https://raw.githubusercontent.com/alialtinok/wislynews-content/main/output/articles.json
    ```
 
 ## Local Çalıştırma
@@ -68,7 +68,7 @@ Kod değişikliği gerekmez, provider-agnostic mimari.
 ## Proje Yapısı
 
 ```
-lexinews-content/
+wislynews-content/
 ├── scripts/
 │   ├── config.py              # RSS feed'leri, prompt, CEFR tanımları
 │   ├── rss_fetcher.py         # feedparser ile haber çekme

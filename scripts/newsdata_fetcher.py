@@ -1,5 +1,5 @@
 """
-LexiNews Content Generator - NewsData.io Fetcher
+WislyNews Content Generator - NewsData.io Fetcher
 
 NewsData.io API'sinden haberleri çeker.
 Free tier: 200 istek/gün, tam makale içeriği.

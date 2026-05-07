@@ -1,5 +1,5 @@
 """
-LexiNews Content Generator - AI Simplifier (Provider-Agnostic)
+WislyNews Content Generator - AI Simplifier (Provider-Agnostic)
 
 Makaleleri CEFR seviyelerine basitleştirmek için AI kullanır.
 İki provider destekler:
