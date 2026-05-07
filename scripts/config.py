@@ -25,9 +25,9 @@ CEFR_LEVELS = [
     CEFRLevel(
         code="A2",
         name="Elementary",
-        min_words=60,
-        target_words=90,
-        description="simple English, common 1000 words, short sentences (8-12 words), basic tenses only. Cover what happened, who, and why — aim for 5-7 sentences",
+        min_words=110,
+        target_words=140,
+        description="simple English, common 1000 words, short sentences (8-12 words), basic tenses only. Cover what happened, who, where, when, and why — aim for 10-13 sentences",
     ),
     CEFRLevel(
         code="B1",
