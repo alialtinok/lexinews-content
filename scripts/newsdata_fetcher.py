@@ -8,7 +8,7 @@ Free tier: 200 istek/gün, tam makale içeriği.
 import hashlib
 import os
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 import urllib.request
 import urllib.parse
@@ -82,14 +82,10 @@ def fetch_newsdata(category: str, api_key: str, limit: int = 3) -> list[RawArtic
             # Sadece başlık varsa atla
             continue
 
-        # Tarih parse
-        published_iso = None
-        pub = item.get("pubDate")
-        if pub:
-            try:
-                published_iso = datetime.strptime(pub, "%Y-%m-%d %H:%M:%S").isoformat()
-            except ValueError:
-                published_iso = pub
+        # Use the pipeline run time as the article's published date so the
+        # app shows "today" rather than the original publication date that
+        # NewsData returns (which is often the day before).
+        published_iso = datetime.now(timezone.utc).isoformat()
 
         article = RawArticle(
             id=generate_article_id(item.get("link", item.get("article_id", ""))),
