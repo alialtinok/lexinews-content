@@ -29,9 +29,11 @@ from config import (
     CLAUDE_MAX_TOKENS,
     GEMINI_MAX_TOKENS,
     GROQ_MAX_TOKENS,
+    QUALITY_RETRY_ATTEMPTS,
     SIMPLIFICATION_PROMPT,
 )
 from newsdata_fetcher import RawArticle
+from quality_check import missing_level_codes, validate_simplified_version
 
 
 # ─────────────────────────────────────────────────────────────
@@ -125,15 +127,16 @@ class BaseSimplifier(ABC):
         versions = {}
         for level in CEFR_LEVELS:
             print(f"      Processing {level.code}...", end=" ", flush=True)
-            result = self.simplify_one(article, level)
+            result = self.simplify_one_with_quality(article, level)
             if result:
                 versions[level.code] = asdict(result)
                 print("✓")
             else:
                 print("✗")
 
-        if not versions:
-            print("      ⚠️  All levels failed, skipping")
+        missing = missing_level_codes(versions)
+        if missing:
+            print(f"      ⚠️  Missing levels {', '.join(missing)}, skipping article")
             return None
 
         return ProcessedArticle(
@@ -144,6 +147,28 @@ class BaseSimplifier(ABC):
             published=article.published,
             versions=versions,
         )
+
+    def simplify_one_with_quality(
+        self, article: RawArticle, level: CEFRLevel
+    ) -> Optional[SimplifiedVersion]:
+        """Retry generation when the provider returns content that fails QA."""
+        for attempt in range(1, QUALITY_RETRY_ATTEMPTS + 1):
+            result = self.simplify_one(article, level)
+            if not result:
+                continue
+
+            issues = validate_simplified_version(result, level)
+            if not issues:
+                return result
+
+            print(
+                f"\n        Quality failed ({attempt}/{QUALITY_RETRY_ATTEMPTS}): "
+                + "; ".join(issues),
+                end=" ",
+                flush=True,
+            )
+
+        return None
 
 
 # ─────────────────────────────────────────────────────────────

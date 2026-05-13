@@ -37,6 +37,10 @@ jobs:
         run: |
           PYTHONPATH=scripts python scripts/generate_articles.py
 
+      - name: Validate generated articles
+        run: |
+          PYTHONPATH=scripts python scripts/validate_output.py output/articles.json
+
       - name: Commit and push updated articles
         run: |
           git config user.name "github-actions[bot]"

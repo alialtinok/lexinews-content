@@ -16,7 +16,6 @@ Environment variables:
 import json
 import os
 import sys
-from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -27,9 +26,10 @@ try:
 except ImportError:
     pass
 
-from config import ARTICLES_PER_CATEGORY, OUTPUT_PATH, NEWSDATA_CATEGORIES
+from config import ARTICLES_PER_CATEGORY, CEFR_LEVELS, OUTPUT_PATH, NEWSDATA_CATEGORIES
 from newsdata_fetcher import fetch_all
 from ai_simplifier import create_simplifier
+from quality_check import article_to_dict, dedupe_processed_articles, dedupe_raw_articles
 
 
 def main() -> int:
@@ -68,6 +68,11 @@ def main() -> int:
         print("❌ No articles fetched. Exiting.")
         return 1
 
+    raw_count = len(raw_articles)
+    raw_articles = dedupe_raw_articles(raw_articles)
+    if len(raw_articles) != raw_count:
+        print(f"   ✓ Removed {raw_count - len(raw_articles)} duplicate raw article(s)")
+
     # ─── 3. Her makaleyi AI ile basitleştir ──────────────
     print(f"\n🤖 Step 2: Simplifying {len(raw_articles)} articles")
     simplifier = create_simplifier()
@@ -82,6 +87,8 @@ def main() -> int:
         print("\n❌ No articles were successfully processed. Exiting.")
         return 1
 
+    processed = dedupe_processed_articles(processed)
+
     print(f"\n✅ Successfully processed {len(processed)}/{len(raw_articles)} articles")
 
     # ─── 4. JSON çıktısını oluştur ───────────────────────
@@ -91,7 +98,7 @@ def main() -> int:
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "version": "1.0",
         "article_count": len(processed),
-        "articles": [asdict(a) for a in processed],
+        "articles": [article_to_dict(a) for a in processed],
     }
 
     output_path = Path(OUTPUT_PATH)
@@ -101,7 +108,10 @@ def main() -> int:
 
     file_size = output_path.stat().st_size / 1024
     print(f"   ✓ Wrote {file_size:.1f} KB")
-    print(f"   ✓ {len(processed)} articles × ~6 levels = ~{len(processed) * 6} versions")
+    print(
+        f"   ✓ {len(processed)} articles × {len(CEFR_LEVELS)} levels = "
+        f"{len(processed) * len(CEFR_LEVELS)} versions"
+    )
 
     print("\n" + "=" * 60)
     print("✅ Done!")

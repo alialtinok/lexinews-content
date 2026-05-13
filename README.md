@@ -1,27 +1,31 @@
 # WislyNews Content Generator
 
-WislyNews iOS app'inin içerik üretim pipeline'ı. RSS feed'lerinden haberleri çeker,
-AI ile 6 farklı CEFR seviyesine (A1-C2) basitleştirir ve JSON olarak yayınlar.
+WislyNews iOS app'inin içerik üretim pipeline'ı. NewsData.io'dan haberleri çeker,
+AI ile 4 farklı CEFR seviyesine (A2-C1) basitleştirir, kalite kontrolünden geçirir
+ve JSON olarak yayınlar.
 
 ## AI Provider Desteği
 
-İki farklı AI provider destekler, `.env`'deki `AI_PROVIDER` ile seçilir:
+Üç farklı AI provider destekler, `.env`'deki `AI_PROVIDER` ile seçilir:
 
 | Provider | Model | Maliyet | Limit |
 |----------|-------|---------|-------|
-| **gemini** (varsayılan) | Gemini 2.0 Flash | **Ücretsiz** | 1500 istek/gün |
+| **groq** (varsayılan) | Llama 3.3 70B | **Ücretsiz** | Günlük kullanım için yeterli |
+| gemini | Gemini 2.0 Flash | **Ücretsiz** | 1500 istek/gün |
 | claude | Claude Haiku 4.5 | ~$4/ay | Pratikte yok |
 
-Biz **~60 istek/gün** kullanıyoruz, Gemini ücretsiz tier rahat rahat yetiyor.
+Günlük üretim hacmi düşük olduğu için ücretsiz provider'lar bu iş için yeterli.
 
 ## Nasıl Çalışır
 
 1. **GitHub Actions** her gün UTC 06:00'da tetiklenir
 2. Script RSS feed'lerinden güncel haberleri çeker
 3. Her haberi AI provider'a gönderir, her CEFR seviyesi için ayrı versiyon üretir
-4. Sonucu `output/articles.json`'a yazar
-5. Workflow dosyayı repo'ya commit'ler
-6. iOS app şu URL'den çeker:
+4. Her versiyonu kalite kontrolünden geçirir: kelime sayısı, başlık, gövde,
+   vocabulary sayısı ve eksik seviye kontrol edilir
+5. Sonucu `output/articles.json`'a yazar
+6. Workflow dosyayı repo'ya commit'ler
+7. iOS app şu URL'den çeker:
    ```
    https://raw.githubusercontent.com/alialtinok/wislynews-content/main/output/articles.json
    ```
@@ -38,12 +42,13 @@ pip install -r requirements.txt
 
 # API key
 cp .env.example .env
-# .env'yi düzenle: GEMINI_API_KEY değerini gir
-# https://aistudio.google.com/apikey adresinden ücretsiz al
+# .env'yi düzenle: AI_PROVIDER, NEWSDATA_API_KEY ve provider key değerlerini gir
 
 # Çalıştır
-cd scripts
-python generate_articles.py
+PYTHONPATH=scripts python scripts/generate_articles.py
+
+# Üretilen JSON'u kontrol et
+PYTHONPATH=scripts python scripts/validate_output.py output/articles.json
 ```
 
 ## Claude'a Geçmek (ileride)
@@ -70,9 +75,12 @@ Kod değişikliği gerekmez, provider-agnostic mimari.
 ```
 wislynews-content/
 ├── scripts/
-│   ├── config.py              # RSS feed'leri, prompt, CEFR tanımları
-│   ├── rss_fetcher.py         # feedparser ile haber çekme
-│   ├── ai_simplifier.py       # Provider-agnostic AI katmanı (Gemini + Claude)
+│   ├── config.py              # prompt, CEFR tanımları, provider ayarları
+│   ├── newsdata_fetcher.py    # NewsData.io ile haber çekme
+│   ├── rss_fetcher.py         # eski feedparser tabanlı haber çekme
+│   ├── ai_simplifier.py       # Provider-agnostic AI katmanı (Groq + Gemini + Claude)
+│   ├── quality_check.py       # kelime sayısı, vocabulary ve eksik seviye kontrolleri
+│   ├── validate_output.py     # mevcut articles.json kalite kontrolü
 │   └── generate_articles.py   # Ana orchestration
 ├── output/
 │   └── articles.json          # Üretilen içerik (iOS buradan okur)

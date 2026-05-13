@@ -25,32 +25,36 @@ CEFR_LEVELS = [
     CEFRLevel(
         code="A2",
         name="Elementary",
-        min_words=110,
-        target_words=140,
-        description="simple English, common 1000 words, short sentences (8-12 words), basic tenses only. Cover what happened, who, where, when, and why — aim for 10-13 sentences",
+        min_words=170,
+        target_words=220,
+        description="simple English, common 1000 words, short sentences (8-12 words), basic tenses only. Cover what happened, who, where, when, and why. Use enough short paragraphs to make the story feel complete without adding new facts",
     ),
     CEFRLevel(
         code="B1",
         name="Intermediate",
-        min_words=90,
-        target_words=130,
-        description="clear English, 2000 most common words, moderate sentence length (10-15 words), all basic tenses",
+        min_words=190,
+        target_words=250,
+        description="clear English, 2000 most common words, moderate sentence length (10-15 words), all basic tenses. Include the main context, consequences, and why the reader should care",
     ),
     CEFRLevel(
         code="B2",
         name="Upper-Intermediate",
-        min_words=120,
-        target_words=170,
-        description="natural English, 3500 common words, varied sentence structure, some idiomatic expressions allowed",
+        min_words=198,
+        target_words=270,
+        description="natural English, 3500 common words, varied sentence structure, some idiomatic expressions allowed. Add background and implications when the original article supports them",
     ),
     CEFRLevel(
         code="C1",
         name="Advanced",
-        min_words=150,
-        target_words=200,
-        description="advanced English, 5000+ words, complex sentences, nuanced vocabulary, figurative language, formal register",
+        min_words=225,
+        target_words=306,
+        description="advanced English, 5000+ words, complex sentences, nuanced vocabulary, figurative language, formal register. Preserve nuance and explain broader significance without inventing facts",
     ),
 ]
+
+# AI output can drift a little above target. The lower bound stays strict.
+WORD_COUNT_MAX_TOLERANCE = 0.15
+QUALITY_RETRY_ATTEMPTS = 2
 
 
 # ─────────────────────────────────────────────────────────────
@@ -74,15 +78,15 @@ ARTICLES_PER_CATEGORY = 2
 # ─────────────────────────────────────────────────────────────
 # Claude (Anthropic)
 CLAUDE_MODEL = "claude-haiku-4-5-20251001"
-CLAUDE_MAX_TOKENS = 1024
+CLAUDE_MAX_TOKENS = 2048
 
 # Gemini (Google) - ücretsiz tier: günde 1500 istek
 GEMINI_MODEL = "gemini-2.0-flash"
-GEMINI_MAX_TOKENS = 1024
+GEMINI_MAX_TOKENS = 2048
 
 # Groq - ücretsiz, bölge kısıtlaması yok, çok hızlı
 GROQ_MODEL = "llama-3.3-70b-versatile"
-GROQ_MAX_TOKENS = 2048
+GROQ_MAX_TOKENS = 4096
 
 
 # ─────────────────────────────────────────────────────────────
