@@ -54,7 +54,7 @@ CEFR_LEVELS = [
 
 # AI output can drift a little above target. The lower bound stays strict.
 WORD_COUNT_MAX_TOLERANCE = 0.15
-QUALITY_RETRY_ATTEMPTS = 2
+QUALITY_RETRY_ATTEMPTS = 3
 
 
 # ─────────────────────────────────────────────────────────────
@@ -101,12 +101,16 @@ Rewrite the following news article for a CEFR {level_code} ({level_name}) Englis
 CRITICAL REQUIREMENTS:
 - Use {level_description}
 - WORD COUNT: Your body text MUST be between {min_words} and {target_words} words. This is non-negotiable. Too short OR too long will be rejected. Aim for exactly {target_words} words.
+- For A2 and B1, do not make the article tiny. Use 4-6 short paragraphs and explain the story step by step until the body reaches the minimum word count.
+- Before returning JSON, silently count the body words. If it is below {min_words}, add another simple paragraph using only facts or safe context from the original article.
 - Cover the full story within that word limit: what happened, who was involved, where, when, and why it matters.
 - Keep all facts accurate - do not invent or hallucinate information
 - Write a clear, engaging title (max 10 words)
 - Identify 5 key vocabulary words from your rewritten text that a {level_code} learner should study
 - The 5 vocabulary words must be appropriate for {level_code} level - not too easy, not too hard
+- Every vocabulary word must appear in the body text exactly as written
 - Return ONLY valid JSON, no markdown, no explanation
+{quality_feedback}
 
 Required JSON format:
 {{

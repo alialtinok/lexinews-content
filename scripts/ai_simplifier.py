@@ -112,7 +112,10 @@ class BaseSimplifier(ABC):
 
     @abstractmethod
     def simplify_one(
-        self, article: RawArticle, level: CEFRLevel
+        self,
+        article: RawArticle,
+        level: CEFRLevel,
+        quality_feedback: str = "",
     ) -> Optional[SimplifiedVersion]:
         """Bir makaleyi bir CEFR seviyesine basitleştir."""
         pass
@@ -152,14 +155,20 @@ class BaseSimplifier(ABC):
         self, article: RawArticle, level: CEFRLevel
     ) -> Optional[SimplifiedVersion]:
         """Retry generation when the provider returns content that fails QA."""
+        previous_issues: list[str] | None = None
         for attempt in range(1, QUALITY_RETRY_ATTEMPTS + 1):
-            result = self.simplify_one(article, level)
+            result = self.simplify_one(
+                article,
+                level,
+                quality_feedback=self.quality_feedback(level, previous_issues),
+            )
             if not result:
                 continue
 
             issues = validate_simplified_version(result, level)
             if not issues:
                 return result
+            previous_issues = issues
 
             print(
                 f"\n        Quality failed ({attempt}/{QUALITY_RETRY_ATTEMPTS}): "
@@ -169,6 +178,21 @@ class BaseSimplifier(ABC):
             )
 
         return None
+
+    def quality_feedback(self, level: CEFRLevel, issues: list[str] | None) -> str:
+        """Add targeted feedback after a failed quality attempt."""
+        if not issues:
+            return ""
+
+        issue_text = "; ".join(issues)
+        return f"""
+
+PREVIOUS ATTEMPT WAS REJECTED:
+- Issues: {issue_text}
+- Repair this in the new JSON.
+- The body must be at least {level.min_words} words. Prefer {level.target_words} words.
+- Keep the same level, keep simple language when needed, and make sure all 5 vocabulary words appear in the body.
+"""
 
 
 # ─────────────────────────────────────────────────────────────
@@ -201,7 +225,10 @@ class GeminiSimplifier(BaseSimplifier):
         self._genai = genai  # Tiplendirme için saklıyoruz
 
     def simplify_one(
-        self, article: RawArticle, level: CEFRLevel
+        self,
+        article: RawArticle,
+        level: CEFRLevel,
+        quality_feedback: str = "",
     ) -> Optional[SimplifiedVersion]:
         prompt = SIMPLIFICATION_PROMPT.format(
             level_code=level.code,
@@ -211,6 +238,7 @@ class GeminiSimplifier(BaseSimplifier):
             target_words=level.target_words,
             original_title=article.title,
             original_content=article.summary,
+            quality_feedback=quality_feedback,
         )
 
         try:
@@ -261,7 +289,10 @@ class ClaudeSimplifier(BaseSimplifier):
         self.client = Anthropic(api_key=key)
 
     def simplify_one(
-        self, article: RawArticle, level: CEFRLevel
+        self,
+        article: RawArticle,
+        level: CEFRLevel,
+        quality_feedback: str = "",
     ) -> Optional[SimplifiedVersion]:
         prompt = SIMPLIFICATION_PROMPT.format(
             level_code=level.code,
@@ -271,6 +302,7 @@ class ClaudeSimplifier(BaseSimplifier):
             target_words=level.target_words,
             original_title=article.title,
             original_content=article.summary,
+            quality_feedback=quality_feedback,
         )
 
         try:
@@ -316,7 +348,10 @@ class GroqSimplifier(BaseSimplifier):
         self.client = Groq(api_key=key)
 
     def simplify_one(
-        self, article: RawArticle, level: CEFRLevel
+        self,
+        article: RawArticle,
+        level: CEFRLevel,
+        quality_feedback: str = "",
     ) -> Optional[SimplifiedVersion]:
         prompt = SIMPLIFICATION_PROMPT.format(
             level_code=level.code,
@@ -326,6 +361,7 @@ class GroqSimplifier(BaseSimplifier):
             target_words=level.target_words,
             original_title=article.title,
             original_content=article.summary,
+            quality_feedback=quality_feedback,
         )
 
         try:
