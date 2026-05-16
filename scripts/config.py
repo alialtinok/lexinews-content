@@ -94,7 +94,7 @@ GEMINI_MAX_TOKENS = 2048
 
 # Groq - ücretsiz, bölge kısıtlaması yok, çok hızlı
 GROQ_MODEL = "llama-3.3-70b-versatile"
-GROQ_MAX_TOKENS = 4096
+GROQ_MAX_TOKENS = 1200
 
 
 # ─────────────────────────────────────────────────────────────
