@@ -35,7 +35,7 @@ from config import (
     RAW_CANDIDATE_MULTIPLIER,
 )
 from newsdata_fetcher import fetch_all
-from ai_simplifier import create_simplifier
+from ai_simplifier import ProviderRateLimitError, create_simplifier
 from quality_check import article_to_dict, dedupe_processed_articles, dedupe_raw_articles
 
 
@@ -96,7 +96,13 @@ def main() -> int:
         if processed_by_category.get(article.category, 0) >= ARTICLES_PER_CATEGORY:
             continue
 
-        result = simplifier.process_article(article)
+        try:
+            result = simplifier.process_article(article)
+        except ProviderRateLimitError as e:
+            print(f"\n❌ AI provider rate limit reached. Keeping existing output.")
+            print(f"   {e}")
+            return 1
+
         if result:
             processed.append(result)
             processed_by_category[result.category] = processed_by_category.get(result.category, 0) + 1

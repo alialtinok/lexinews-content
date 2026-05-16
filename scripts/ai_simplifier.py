@@ -59,6 +59,10 @@ class ProcessedArticle:
     versions: dict[str, dict]
 
 
+class ProviderRateLimitError(RuntimeError):
+    """Raised when the provider asks us to stop sending requests."""
+
+
 # ─────────────────────────────────────────────────────────────
 # Yardımcı fonksiyonlar (provider'dan bağımsız)
 # ─────────────────────────────────────────────────────────────
@@ -295,6 +299,8 @@ class GeminiSimplifier(BaseSimplifier):
                 },
             )
         except Exception as e:
+            if "rate_limit" in str(e).lower() or "429" in str(e):
+                raise ProviderRateLimitError(str(e)) from e
             print(f"      ❌ Gemini API error: {e}")
             return None
 
@@ -356,6 +362,8 @@ class ClaudeSimplifier(BaseSimplifier):
                 messages=[{"role": "user", "content": prompt}],
             )
         except Exception as e:
+            if "rate_limit" in str(e).lower() or "429" in str(e):
+                raise ProviderRateLimitError(str(e)) from e
             print(f"      ❌ Claude API error: {e}")
             return None
 
@@ -417,6 +425,8 @@ class GroqSimplifier(BaseSimplifier):
                 response_format={"type": "json_object"},
             )
         except Exception as e:
+            if "rate_limit" in str(e).lower() or "429" in str(e):
+                raise ProviderRateLimitError(str(e)) from e
             print(f"      ❌ Groq API error: {e}")
             return None
 
