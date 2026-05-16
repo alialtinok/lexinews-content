@@ -136,6 +136,8 @@ class BaseSimplifier(ABC):
                 print("✓")
             else:
                 print("✗")
+                print(f"      ⚠️  Missing {level.code}, skipping article early")
+                return None
 
         missing = missing_level_codes(versions)
         if missing:

@@ -26,7 +26,14 @@ try:
 except ImportError:
     pass
 
-from config import ARTICLES_PER_CATEGORY, CEFR_LEVELS, OUTPUT_PATH, NEWSDATA_CATEGORIES
+from config import (
+    ARTICLES_PER_CATEGORY,
+    CEFR_LEVELS,
+    MIN_OUTPUT_ARTICLES,
+    NEWSDATA_CATEGORIES,
+    OUTPUT_PATH,
+    RAW_CANDIDATE_MULTIPLIER,
+)
 from newsdata_fetcher import fetch_all
 from ai_simplifier import create_simplifier
 from quality_check import article_to_dict, dedupe_processed_articles, dedupe_raw_articles
@@ -62,7 +69,12 @@ def main() -> int:
         return 1
 
     print("\n🌐 Step 1: Fetching from NewsData.io")
-    raw_articles = fetch_all(list(NEWSDATA_CATEGORIES.keys()), ARTICLES_PER_CATEGORY, newsdata_key)
+    raw_articles = fetch_all(
+        list(NEWSDATA_CATEGORIES.keys()),
+        ARTICLES_PER_CATEGORY,
+        newsdata_key,
+        RAW_CANDIDATE_MULTIPLIER,
+    )
 
     if not raw_articles:
         print("❌ No articles fetched. Exiting.")
@@ -77,17 +89,33 @@ def main() -> int:
     print(f"\n🤖 Step 2: Simplifying {len(raw_articles)} articles")
     simplifier = create_simplifier()
 
+    target_total = len(NEWSDATA_CATEGORIES) * ARTICLES_PER_CATEGORY
     processed = []
+    processed_by_category = {category: 0 for category in NEWSDATA_CATEGORIES}
     for article in raw_articles:
+        if processed_by_category.get(article.category, 0) >= ARTICLES_PER_CATEGORY:
+            continue
+
         result = simplifier.process_article(article)
         if result:
             processed.append(result)
+            processed_by_category[result.category] = processed_by_category.get(result.category, 0) + 1
+
+        if len(processed) >= target_total:
+            break
 
     if not processed:
         print("\n❌ No articles were successfully processed. Exiting.")
         return 1
 
     processed = dedupe_processed_articles(processed)
+
+    if len(processed) < MIN_OUTPUT_ARTICLES:
+        print(
+            f"\n❌ Only {len(processed)} articles passed quality; "
+            f"minimum is {MIN_OUTPUT_ARTICLES}. Keeping existing output."
+        )
+        return 1
 
     print(f"\n✅ Successfully processed {len(processed)}/{len(raw_articles)} articles")
 

@@ -104,18 +104,24 @@ def fetch_newsdata(category: str, api_key: str, limit: int = 3) -> list[RawArtic
     return articles
 
 
-def fetch_all(categories: list, per_category: int, api_key: str) -> list[RawArticle]:
+def fetch_all(
+    categories: list,
+    per_category: int,
+    api_key: str,
+    candidate_multiplier: int = 1,
+) -> list[RawArticle]:
     all_articles = []
     seen_ids = set()
+    candidate_limit = per_category * candidate_multiplier
 
     for category in categories:
         print(f"\n📡 Category: {category}")
-        articles = fetch_newsdata(category, api_key, limit=per_category * 2)
+        articles = fetch_newsdata(category, api_key, limit=candidate_limit)
         for article in articles:
             if article.id not in seen_ids:
                 all_articles.append(article)
                 seen_ids.add(article.id)
-            if len([a for a in all_articles if a.category == category]) >= per_category:
+            if len([a for a in all_articles if a.category == category]) >= candidate_limit:
                 break
 
     print(f"\n✅ Total articles fetched: {len(all_articles)}")

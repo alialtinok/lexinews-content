@@ -54,7 +54,7 @@ CEFR_LEVELS = [
 
 # AI output can drift a little above target. The lower bound stays strict.
 WORD_COUNT_MAX_TOLERANCE = 0.15
-QUALITY_RETRY_ATTEMPTS = 3
+QUALITY_RETRY_ATTEMPTS = 2
 
 
 # ─────────────────────────────────────────────────────────────
@@ -71,6 +71,14 @@ NEWSDATA_CATEGORIES = {
 
 # Her kategoriden kaç haber alınacak
 ARTICLES_PER_CATEGORY = 2
+
+# Generate from a larger raw candidate pool so one weak article does not shrink
+# the final feed.
+RAW_CANDIDATE_MULTIPLIER = 4
+
+# Never publish a tiny feed. If fewer articles pass QA, the workflow fails
+# before overwriting output/articles.json, so the app keeps the last good feed.
+MIN_OUTPUT_ARTICLES = 8
 
 
 # ─────────────────────────────────────────────────────────────
