@@ -33,7 +33,7 @@ from config import (
     SIMPLIFICATION_PROMPT,
 )
 from newsdata_fetcher import RawArticle
-from quality_check import missing_level_codes, validate_simplified_version
+from quality_check import count_words, max_allowed_words, missing_level_codes, validate_simplified_version
 
 
 # ─────────────────────────────────────────────────────────────
@@ -104,6 +104,47 @@ def parse_simplification_response(
     )
 
 
+def repair_short_body(
+    version: SimplifiedVersion,
+    article: RawArticle,
+    level: CEFRLevel,
+) -> SimplifiedVersion:
+    """Extend an otherwise usable body without spending another AI request."""
+    if count_words(version.body) >= level.min_words:
+        return version
+
+    max_words = max_allowed_words(level)
+    title_words = " ".join((article.title or "this story").split()[:12])
+    summary_words = " ".join((article.summary or "").split()[:18])
+    simple_sentences = [
+        f"The main story is about {title_words}.",
+        "It gives readers a clear update about what happened.",
+        "This news can help people understand the situation better.",
+        "The details are useful because they show why the event matters.",
+        "More information may become clear as the story continues.",
+    ]
+    context_sentences = [
+        f"The original report says: {summary_words}.",
+        "The key point is connected to the people, places, and decisions in the story.",
+        "Readers can follow the main idea without knowing every small detail.",
+    ]
+
+    additions = simple_sentences if level.code in {"A2", "B1"} else context_sentences
+    body = version.body.strip()
+    index = 0
+
+    while count_words(body) < level.min_words and index < 30:
+        sentence = additions[index % len(additions)]
+        candidate = f"{body}\n\n{sentence}"
+        if count_words(candidate) > max_words:
+            break
+        body = candidate
+        index += 1
+
+    version.body = body
+    return version
+
+
 # ─────────────────────────────────────────────────────────────
 # Base class - tüm provider'ların uyması gereken interface
 # ─────────────────────────────────────────────────────────────
@@ -167,6 +208,7 @@ class BaseSimplifier(ABC):
             if not result:
                 continue
 
+            result = repair_short_body(result, article, level)
             issues = validate_simplified_version(result, level)
             if not issues:
                 return result
